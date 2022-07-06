@@ -85,17 +85,17 @@ namespace TypewiseAlert.Test
         [Fact]
         public void CheckNormalBreachForPassiveCoolingWithControllerAlert()
         {
-            var status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, 30, PrinterActionCall);
+            var controllerStatus = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, 30, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.NORMAL, AlertStatus.Success, 1, "65261 : NORMAL\n");
+            PerformAssertion(controllerStatus, BreachType.NORMAL, AlertStatus.Success, 1, "65261 : NORMAL\n");
 
-            status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, 0, PrinterActionCall);
+            controllerStatus = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, 0, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.NORMAL, AlertStatus.Success, 2, "65261 : NORMAL\n");
+            PerformAssertion(controllerStatus, BreachType.NORMAL, AlertStatus.Success, 2, "65261 : NORMAL\n");
 
-            status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, 35, PrinterActionCall);
+            controllerStatus = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, 35, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.NORMAL, AlertStatus.Success, 3, "65261 : NORMAL\n");
+            PerformAssertion(controllerStatus, BreachType.NORMAL, AlertStatus.Success, 3, "65261 : NORMAL\n");
         }
 
         [Fact]
@@ -117,17 +117,17 @@ namespace TypewiseAlert.Test
         [Fact]
         public void CheckNormalBreachForPassiveCoolingWithEmailAlert()
         {
-            var status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_EMAIL, _BatterySpecification, 20, PrinterActionCall);
+            var emailStatus = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_EMAIL, _BatterySpecification, 20, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.NORMAL, AlertStatus.Success, 0, null);
+            PerformAssertion(emailStatus, BreachType.NORMAL, AlertStatus.Success, 0, null);
 
-            status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_EMAIL, _BatterySpecification, 0, PrinterActionCall);
+            emailStatus = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_EMAIL, _BatterySpecification, 0, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.NORMAL, AlertStatus.Success, 0, null);
+            PerformAssertion(emailStatus, BreachType.NORMAL, AlertStatus.Success, 0, null);
 
-            status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_EMAIL, _BatterySpecification, 35, PrinterActionCall);
+            emailStatus = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_EMAIL, _BatterySpecification, 35, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.NORMAL, AlertStatus.Success, 0, null);
+            PerformAssertion(emailStatus, BreachType.NORMAL, AlertStatus.Success, 0, null);
         }
 
         [Fact]
