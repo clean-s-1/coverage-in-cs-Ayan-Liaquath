@@ -13,7 +13,7 @@ namespace TypewiseAlert
 
         public bool SendAlert(BreachType breachType, Func<string, bool> printerAction)
         {
-            return printerAction.Invoke(FetchControllerData(breachType));
+            return printerAction == null ? false : printerAction.Invoke(FetchControllerData(breachType));
         }
 
         private string FetchControllerData(BreachType breachType)

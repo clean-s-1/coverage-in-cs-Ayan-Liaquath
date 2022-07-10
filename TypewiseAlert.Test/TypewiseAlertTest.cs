@@ -1,7 +1,6 @@
 namespace TypewiseAlert.Test
 {
     using System.Collections.Generic;
-    using System.Reflection;
 
     using Xunit;
 
@@ -12,10 +11,6 @@ namespace TypewiseAlert.Test
         private readonly ITargetAlerter _TargetAlerter;
 
         private BatterySpecification _BatterySpecification;
-
-        private int _PrinterActionCallCount;
-
-        private string _PrintedMessage;
 
         private ITypewiseAlert<double> _TypewiseAlert;
 
@@ -49,37 +44,23 @@ namespace TypewiseAlert.Test
                 new BatterySpecification { Brand = "Philips", CoolingType = CoolingType.PASSIVE_COOLING };
 
             _TypewiseAlert = new TypewiseAlert<double>(_BreachChecker, _TargetAlerter);
-
-            _PrinterActionCallCount = 0;
-
-            _PrintedMessage = null;
         }
 
         private bool PrinterActionCall(string arg)
         {
-            _PrintedMessage = arg;
-
-            _PrinterActionCallCount++;
-
             return true;
         }
 
         private void PerformAssertion(
             BreachStatus status,
             BreachType expectedBreachType,
-            AlertStatus expectedAlertStatus,
-            int expectedActionCallCount,
-            string printedMessage)
+            AlertStatus expectedAlertStatus)
         {
             Assert.NotNull(status);
 
             Assert.Equal(expectedBreachType, status.BreachType);
 
             Assert.Equal(expectedAlertStatus, status.AlertStatus);
-
-            Assert.Equal(expectedActionCallCount, _PrinterActionCallCount);
-
-            Assert.Equal(printedMessage, _PrintedMessage);
         }
 
         [Fact]
@@ -87,15 +68,15 @@ namespace TypewiseAlert.Test
         {
             var passiveCoolingStatus = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, 30, PrinterActionCall);
 
-            PerformAssertion(passiveCoolingStatus, BreachType.NORMAL, AlertStatus.Success, 1, "65261 : NORMAL\n");
+            PerformAssertion(passiveCoolingStatus, BreachType.NORMAL, AlertStatus.Success);
 
             passiveCoolingStatus = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, 0, PrinterActionCall);
 
-            PerformAssertion(passiveCoolingStatus, BreachType.NORMAL, AlertStatus.Success, 2, "65261 : NORMAL\n");
+            PerformAssertion(passiveCoolingStatus, BreachType.NORMAL, AlertStatus.Success);
 
             passiveCoolingStatus = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, 35, PrinterActionCall);
 
-            PerformAssertion(passiveCoolingStatus, BreachType.NORMAL, AlertStatus.Success, 3, "65261 : NORMAL\n");
+            PerformAssertion(passiveCoolingStatus, BreachType.NORMAL, AlertStatus.Success);
         }
 
         [Fact]
@@ -103,7 +84,7 @@ namespace TypewiseAlert.Test
         {
             var status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, -1, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.TOO_LOW, AlertStatus.Success, 1, "65261 : TOO_LOW\n");
+            PerformAssertion(status, BreachType.TOO_LOW, AlertStatus.Success);
         }
 
         [Fact]
@@ -111,7 +92,7 @@ namespace TypewiseAlert.Test
         {
             var status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, 55, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.TOO_HIGH, AlertStatus.Success, 1, "65261 : TOO_HIGH\n");
+            PerformAssertion(status, BreachType.TOO_HIGH, AlertStatus.Success);
         }
 
         [Fact]
@@ -119,15 +100,15 @@ namespace TypewiseAlert.Test
         {
             var emailStatus = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_EMAIL, _BatterySpecification, 20, PrinterActionCall);
 
-            PerformAssertion(emailStatus, BreachType.NORMAL, AlertStatus.Success, 0, null);
+            PerformAssertion(emailStatus, BreachType.NORMAL, AlertStatus.Success);
 
             emailStatus = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_EMAIL, _BatterySpecification, 0, PrinterActionCall);
 
-            PerformAssertion(emailStatus, BreachType.NORMAL, AlertStatus.Success, 0, null);
+            PerformAssertion(emailStatus, BreachType.NORMAL, AlertStatus.Success);
 
             emailStatus = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_EMAIL, _BatterySpecification, 35, PrinterActionCall);
 
-            PerformAssertion(emailStatus, BreachType.NORMAL, AlertStatus.Success, 0, null);
+            PerformAssertion(emailStatus, BreachType.NORMAL, AlertStatus.Success);
         }
 
         [Fact]
@@ -135,7 +116,7 @@ namespace TypewiseAlert.Test
         {
             var status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_EMAIL, _BatterySpecification, -10, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.TOO_LOW, AlertStatus.Success, 1, "To : a.b@c.com\nHi, the temperature is too low\n");
+            PerformAssertion(status, BreachType.TOO_LOW, AlertStatus.Success);
         }
 
         [Fact]
@@ -143,7 +124,7 @@ namespace TypewiseAlert.Test
         {
             var status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_EMAIL, _BatterySpecification, 65, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.TOO_HIGH, AlertStatus.Success, 1, "To : a.b@c.com\nHi, the temperature is too high\n");
+            PerformAssertion(status, BreachType.TOO_HIGH, AlertStatus.Success);
         }
 
         [Fact]
@@ -153,15 +134,15 @@ namespace TypewiseAlert.Test
 
             var controllerStatus = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, 10, PrinterActionCall);
 
-            PerformAssertion(controllerStatus, BreachType.NORMAL, AlertStatus.Success, 1, "65261 : NORMAL\n");
+            PerformAssertion(controllerStatus, BreachType.NORMAL, AlertStatus.Success);
 
             controllerStatus = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, 0, PrinterActionCall);
 
-            PerformAssertion(controllerStatus, BreachType.NORMAL, AlertStatus.Success, 2, "65261 : NORMAL\n");
+            PerformAssertion(controllerStatus, BreachType.NORMAL, AlertStatus.Success);
 
             controllerStatus = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, 40, PrinterActionCall);
 
-            PerformAssertion(controllerStatus, BreachType.NORMAL, AlertStatus.Success, 3, "65261 : NORMAL\n");
+            PerformAssertion(controllerStatus, BreachType.NORMAL, AlertStatus.Success);
         }
 
         [Fact]
@@ -171,7 +152,7 @@ namespace TypewiseAlert.Test
 
             var status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, -2, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.TOO_LOW, AlertStatus.Success, 1, "65261 : TOO_LOW\n");
+            PerformAssertion(status, BreachType.TOO_LOW, AlertStatus.Success);
         }
 
         [Fact]
@@ -181,7 +162,7 @@ namespace TypewiseAlert.Test
 
             var status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, 41, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.TOO_HIGH, AlertStatus.Success, 1, "65261 : TOO_HIGH\n");
+            PerformAssertion(status, BreachType.TOO_HIGH, AlertStatus.Success);
         }
 
         [Fact]
@@ -191,15 +172,15 @@ namespace TypewiseAlert.Test
 
             var medCoolingStatus = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_EMAIL, _BatterySpecification, 25, PrinterActionCall);
 
-            PerformAssertion(medCoolingStatus, BreachType.NORMAL, AlertStatus.Success, 0, null);
+            PerformAssertion(medCoolingStatus, BreachType.NORMAL, AlertStatus.Success);
 
             medCoolingStatus = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_EMAIL, _BatterySpecification, 0, PrinterActionCall);
 
-            PerformAssertion(medCoolingStatus, BreachType.NORMAL, AlertStatus.Success, 0, null);
+            PerformAssertion(medCoolingStatus, BreachType.NORMAL, AlertStatus.Success);
 
             medCoolingStatus = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_EMAIL, _BatterySpecification, 40, PrinterActionCall);
 
-            PerformAssertion(medCoolingStatus, BreachType.NORMAL, AlertStatus.Success, 0, null);
+            PerformAssertion(medCoolingStatus, BreachType.NORMAL, AlertStatus.Success);
         }
 
         [Fact]
@@ -209,7 +190,7 @@ namespace TypewiseAlert.Test
 
             var status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_EMAIL, _BatterySpecification, -3, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.TOO_LOW, AlertStatus.Success, 1, "To : a.b@c.com\nHi, the temperature is too low\n");
+            PerformAssertion(status, BreachType.TOO_LOW, AlertStatus.Success);
         }
 
         [Fact]
@@ -219,7 +200,7 @@ namespace TypewiseAlert.Test
 
             var status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_EMAIL, _BatterySpecification, 60, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.TOO_HIGH, AlertStatus.Success, 1, "To : a.b@c.com\nHi, the temperature is too high\n");
+            PerformAssertion(status, BreachType.TOO_HIGH, AlertStatus.Success);
         }
 
         [Fact]
@@ -229,15 +210,15 @@ namespace TypewiseAlert.Test
 
             var status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, 35, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.NORMAL, AlertStatus.Success, 1, "65261 : NORMAL\n");
+            PerformAssertion(status, BreachType.NORMAL, AlertStatus.Success);
 
             status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, 0, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.NORMAL, AlertStatus.Success, 2, "65261 : NORMAL\n");
+            PerformAssertion(status, BreachType.NORMAL, AlertStatus.Success);
 
             status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, 45, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.NORMAL, AlertStatus.Success, 3, "65261 : NORMAL\n");
+            PerformAssertion(status, BreachType.NORMAL, AlertStatus.Success);
         }
 
         [Fact]
@@ -247,7 +228,7 @@ namespace TypewiseAlert.Test
 
             var status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, -4, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.TOO_LOW, AlertStatus.Success, 1, "65261 : TOO_LOW\n");
+            PerformAssertion(status, BreachType.TOO_LOW, AlertStatus.Success);
         }
 
         [Fact]
@@ -257,7 +238,7 @@ namespace TypewiseAlert.Test
 
             var status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, 46, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.TOO_HIGH, AlertStatus.Success, 1, "65261 : TOO_HIGH\n");
+            PerformAssertion(status, BreachType.TOO_HIGH, AlertStatus.Success);
         }
 
         [Fact]
@@ -267,15 +248,15 @@ namespace TypewiseAlert.Test
 
             var highCoolingStatus = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_EMAIL, _BatterySpecification, 15, PrinterActionCall);
 
-            PerformAssertion(highCoolingStatus, BreachType.NORMAL, AlertStatus.Success, 0, null);
+            PerformAssertion(highCoolingStatus, BreachType.NORMAL, AlertStatus.Success);
 
             highCoolingStatus = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_EMAIL, _BatterySpecification, 0, PrinterActionCall);
 
-            PerformAssertion(highCoolingStatus, BreachType.NORMAL, AlertStatus.Success, 0, null);
+            PerformAssertion(highCoolingStatus, BreachType.NORMAL, AlertStatus.Success);
 
             highCoolingStatus = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_EMAIL, _BatterySpecification, 45, PrinterActionCall);
 
-            PerformAssertion(highCoolingStatus, BreachType.NORMAL, AlertStatus.Success, 0, null);
+            PerformAssertion(highCoolingStatus, BreachType.NORMAL, AlertStatus.Success);
         }
 
         [Fact]
@@ -285,7 +266,7 @@ namespace TypewiseAlert.Test
 
             var status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_EMAIL, _BatterySpecification, -6, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.TOO_LOW, AlertStatus.Success, 1, "To : a.b@c.com\nHi, the temperature is too low\n");
+            PerformAssertion(status, BreachType.TOO_LOW, AlertStatus.Success);
         }
 
         [Fact]
@@ -295,7 +276,7 @@ namespace TypewiseAlert.Test
 
             var status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_EMAIL, _BatterySpecification, 50, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.TOO_HIGH, AlertStatus.Success, 1, "To : a.b@c.com\nHi, the temperature is too high\n");
+            PerformAssertion(status, BreachType.TOO_HIGH, AlertStatus.Success);
         }
 
         [Fact]
@@ -303,7 +284,7 @@ namespace TypewiseAlert.Test
         {
             var status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_EMAIL, _BatterySpecification, 100, null);
 
-            PerformAssertion(status, BreachType.TOO_HIGH, AlertStatus.Printer_Action_Is_Invalid, 0, null);
+            PerformAssertion(status, BreachType.TOO_HIGH, AlertStatus.Printer_Action_Is_Invalid);
         }
 
         [Fact]
@@ -316,7 +297,7 @@ namespace TypewiseAlert.Test
 
             var status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, 105, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.TOO_HIGH, AlertStatus.Alerter_Is_Not_Valid, 0, null);
+            PerformAssertion(status, BreachType.TOO_HIGH, AlertStatus.Alerter_Is_Not_Valid);
         }
 
         [Fact]
@@ -329,7 +310,7 @@ namespace TypewiseAlert.Test
 
             var status = _TypewiseAlert.CheckBreachAndAlert(AlertTarget.TO_CONTROLLER, _BatterySpecification, 90, PrinterActionCall);
 
-            PerformAssertion(status, BreachType.TOO_HIGH, AlertStatus.Alert_Target_Is_Not_Present, 0, null);
+            PerformAssertion(status, BreachType.TOO_HIGH, AlertStatus.Alert_Target_Is_Not_Present);
         }
     }
 }
