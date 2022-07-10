@@ -1,5 +1,6 @@
 namespace TypewiseAlert
 {
+    using System;
     using System.Collections.Generic;
 
     public class BreachChecker<T> : IBreachChecker<T>
@@ -20,8 +21,8 @@ namespace TypewiseAlert
             CoolingType coolingType,
             T temperature)
         {
-            var lowerLimit = (object)0;
-            var upperLimit = (object)0;
+            var lowerLimit = (T)Convert.ChangeType(0, typeof(T));
+            var upperLimit = (T)Convert.ChangeType(0, typeof(T));
 
             var breachLimits = FetchBreachLimits(coolingType);
 
@@ -31,7 +32,7 @@ namespace TypewiseAlert
                 upperLimit = breachLimits.FetchUpperLimit();
             }
             
-            return FetchBreachType(temperature, (T)lowerLimit, (T)upperLimit);
+            return FetchBreachType(temperature, lowerLimit, upperLimit);
         }
 
         private BreachType FetchBreachType(T value, T lowerLimit, T upperLimit)
