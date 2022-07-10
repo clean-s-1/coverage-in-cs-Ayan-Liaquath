@@ -15,9 +15,9 @@ namespace TypewiseAlert.Test
         {
             _BreachLimits = new List<IBreachLimits<double>>
                                    {
-                                       new BreachLimits<double>(CoolingType.PASSIVE_COOLING, 0, 35),
-                                       new BreachLimits<double>(CoolingType.MED_ACTIVE_COOLING, 0, 40),
-                                       new BreachLimits<double>(CoolingType.HI_ACTIVE_COOLING, 0, 45)
+                                       new BreachLimits<double>(CoolingType.PASSIVE_COOLING, 0, 100),
+                                       new BreachLimits<double>(CoolingType.MED_ACTIVE_COOLING, 0, 150),
+                                       new BreachLimits<double>(CoolingType.HI_ACTIVE_COOLING, 0, 200)
                                    };
 
             _BreachChecker = new BreachChecker<double>(_BreachLimits);
@@ -39,7 +39,7 @@ namespace TypewiseAlert.Test
         [Fact]
         public void CheckPassiveCoolingHighBreach()
         {
-            PerformBreachCheck(CoolingType.PASSIVE_COOLING, 40, BreachType.TOO_HIGH);
+            PerformBreachCheck(CoolingType.PASSIVE_COOLING, 105, BreachType.TOO_HIGH);
         }
 
         [Fact]
@@ -57,7 +57,7 @@ namespace TypewiseAlert.Test
         [Fact]
         public void CheckMedCoolingHighBreach()
         {
-            PerformBreachCheck(CoolingType.MED_ACTIVE_COOLING, 43, BreachType.TOO_HIGH);
+            PerformBreachCheck(CoolingType.MED_ACTIVE_COOLING, 151, BreachType.TOO_HIGH);
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace TypewiseAlert.Test
         [Fact]
         public void CheckHighCoolingHighBreach()
         {
-            PerformBreachCheck(CoolingType.HI_ACTIVE_COOLING, 46, BreachType.TOO_HIGH);
+            PerformBreachCheck(CoolingType.HI_ACTIVE_COOLING, 250, BreachType.TOO_HIGH);
         }
 
         [Fact]
