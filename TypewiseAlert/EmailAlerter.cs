@@ -28,7 +28,7 @@ namespace TypewiseAlert
                 return true;
             }
 
-            return printerAction.Invoke(FetchEmailData(breachType));
+            return printerAction == null ? false : printerAction.Invoke(FetchEmailData(breachType));
         }
 
         private string FetchEmailData(BreachType breachType)
